@@ -16,7 +16,7 @@ dimension(1,1,1).
 dimesion(2,1,2).
 position(1,0,0).
 position(2,1,0).
-target(1,2,0).
+target(1,0,1).
 /*  
  *     0 1 2 3  H
  *   0 ----------> 
@@ -26,7 +26,10 @@ target(1,2,0).
  *   \/
  */
 
-move(Room, NewRoom, 1) :-
+moves(OriginalRoom, TargetRoom, K) :-
+	move(OriginalRoom, OriginalRoom, TargetRoom, K).
+ 
+move(OriginalRoom, Room, NewRoom, 1) :-
 	move1(Room, _, NewRoom),
 	target(Booth, StartX, StartY),
 	dimension(Booth, Dx, Dy),
@@ -38,17 +41,18 @@ move(Room, NewRoom, 1) :-
 	TotalCount =:= Count,
 	% Start checking if the NewRoom matches with OldRoom
 	clear(NewRoom, TargetPositions, NewRoom1),
-	findpos(Room, Booth, InitialPositions),
-	clear(Room, InitialPositions, Room1),
+	findpos(OriginalRoom, Booth, InitialPositions),
+	clear(OriginalRoom, InitialPositions, Room1),
 	equals(NewRoom1, Room1).
 	
 %TODO Add the condition that the other items should be in the same place.
-
-move(Room, NewRoom, K) :-
+/*
+move(OriginalRoom, Room, NewRoom, K) :-
 	move1(Room, _, NewRoom1),
-	move(NewRoom1, NewRoom, K1),
+	write('Hello'),nl,
+	move(OriginalRoom, NewRoom1, NewRoom, K1),
 	K is K1+1.
-
+*/
 
 /* equals - Given 2 matrices, checks if they are equal.
  *
@@ -118,6 +122,7 @@ moveLeft(Room, Booth, NewRoom) :-
  * 		(Matrix, Positions, NewMatrix).
  */	
 moveGen(Room, Booth, Dx, Dy, NewRoom):-
+	dimesion(Booth,_,_),
 	findpos(Room, Booth, Positions),
 	Positions \= [],
 	getNewPos(Positions, [Dx, Dy], NewPositions),
