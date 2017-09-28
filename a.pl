@@ -25,11 +25,11 @@ horizon(10).
 room(3,3).
 booths(1).
 dimension(1,1,1).
-%dimension(2,1,2).
+dimension(2,1,2).
 position(1,0,0).
-%position(2,1,0).
-target(1,0,2).
-horizon(10).
+position(2,1,0).
+target(1,2,0).
+horizon(6).
 
 /*  
  *     0 1 2 3  H
@@ -41,7 +41,7 @@ horizon(10).
  */
 
 moves(OriginalRoom, TargetRoom, K) :-
-	move(OriginalRoom, OriginalRoom, TargetRoom, K, 0).
+	move(OriginalRoom, OriginalRoom, TargetRoom, K, 0), writeln(K), fail;true.
 
 move(OriginalRoom, Room, NewRoom, 1, Depth) :-
 	horizon(Limit),
