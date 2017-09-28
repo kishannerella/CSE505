@@ -10,13 +10,27 @@ target(3, 0, 2).
 horizon(10).
 */
 
+/*
 room(3,3).
 booths(2).
 dimension(1,1,1).
-dimesion(2,1,2).
+dimension(2,1,2).
 position(1,0,0).
 position(2,1,0).
-target(1,0,1).
+target(1,0,2).
+horizon(10).
+*/
+
+
+room(3,3).
+booths(1).
+dimension(1,1,1).
+%dimension(2,1,2).
+position(1,0,0).
+%position(2,1,0).
+target(1,0,2).
+horizon(10).
+
 /*  
  *     0 1 2 3  H
  *   0 ----------> 
@@ -27,9 +41,11 @@ target(1,0,1).
  */
 
 moves(OriginalRoom, TargetRoom, K) :-
-	move(OriginalRoom, OriginalRoom, TargetRoom, K).
- 
-move(OriginalRoom, Room, NewRoom, 1) :-
+	move(OriginalRoom, OriginalRoom, TargetRoom, K, 0).
+
+move(OriginalRoom, Room, NewRoom, 1, Depth) :-
+	horizon(Limit),
+	Depth =< Limit,
 	move1(Room, _, NewRoom),
 	target(Booth, StartX, StartY),
 	dimension(Booth, Dx, Dy),
@@ -46,13 +62,15 @@ move(OriginalRoom, Room, NewRoom, 1) :-
 	equals(NewRoom1, Room1).
 	
 %TODO Add the condition that the other items should be in the same place.
-/*
-move(OriginalRoom, Room, NewRoom, K) :-
+
+move(OriginalRoom, Room, NewRoom, K, Depth) :-
+	horizon(Limit),
+	Depth =< Limit,
 	move1(Room, _, NewRoom1),
-	write('Hello'),nl,
-	move(OriginalRoom, NewRoom1, NewRoom, K1),
+	Depth1 is Depth + 1,
+	move(OriginalRoom, NewRoom1, NewRoom, K1, Depth1),
 	K is K1+1.
-*/
+
 
 /* equals - Given 2 matrices, checks if they are equal.
  *
@@ -122,7 +140,7 @@ moveLeft(Room, Booth, NewRoom) :-
  * 		(Matrix, Positions, NewMatrix).
  */	
 moveGen(Room, Booth, Dx, Dy, NewRoom):-
-	dimesion(Booth,_,_),
+	dimension(Booth,_,_),
 	findpos(Room, Booth, Positions),
 	Positions \= [],
 	getNewPos(Positions, [Dx, Dy], NewPositions),
