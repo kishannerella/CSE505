@@ -21,16 +21,36 @@ target(1,0,2).
 horizon(10).
 */
 
-
+/*
 room(3,3).
-booths(1).
+booths(2).
 dimension(1,1,1).
 dimension(2,1,2).
 position(1,0,0).
 position(2,1,0).
 target(1,2,0).
 horizon(6).
+*/
 
+/*
+room(3, 3).
+booths(3).
+dimension(1, 2, 1).
+dimension(2, 2, 1).
+dimension(3, 1, 1).
+position(1, 0, 1).
+position(2, 1, 2).
+position(3, 0, 0).
+target(3, 0, 2).
+horizon(10).
+*/
+
+room(3, 3).
+booths(1).
+dimension(1, 1, 1).
+position(1, 0, 0).
+target(1, 2, 2).
+horizon(5).
 /*  
  *     0 1 2 3  H
  *   0 ----------> 
@@ -39,9 +59,10 @@ horizon(6).
  *   3|
  *   \/
  */
-
-moves(OriginalRoom, TargetRoom, K) :-
-	move(OriginalRoom, OriginalRoom, TargetRoom, K, 0), writeln(K), fail;true.
+	
+moves(K) :-
+	constructMatrix(OriginalRoom),
+	move(OriginalRoom, OriginalRoom, _, K, 0), writeln(K), fail;true.
 
 move(OriginalRoom, Room, NewRoom, 1, Depth) :-
 	horizon(Limit),
@@ -93,7 +114,60 @@ equals([[X|T1]|T2], [[X|T3]|T4], Len) :-
 equals([[X|T1]|T2], [[Y|T3]|T4], Len) :-
 	X \= Y,
 	equals([T1|T2], [T3|T4], Len).
+
+/* constructMatrix - Return Matrix form of the given room
+ *
+ * Parameters :
+ * 		(Matrix).
+ */	
+constructMatrix(M) :-
+	room(X, Y),
+	createZeroMatrix(X, Y, M0),
+	booths(B),
+	addBooths(B, M0, M).
+
+/* addBooths - Add Booths to the given Matrix(Room)
+ *
+ * Parameters :
+ * 		(BoothNumber, OldMatrix, NewMatrix).
+ */	
+addBooths(0, M1, M1).
+addBooths(B, M1, M) :-
+	B > 0,
+	B1 is B-1,
+	addBooths(B1, M1, M2),
+	position(B, StartX, StartY),
+	dimension(B, Dx, Dy),
+	EndX is StartX + Dx - 1,
+	EndY is StartY + Dy - 1,
+	getAllPos(StartX, StartY, EndX, EndY, Positions),
+	replace(M2, B, Positions, M).
 	
+	
+/* createZeroMatrix - Given X,Y, creates a 0-matrix
+ * of size X*Y.
+ *
+ * Parameters :
+ * 		(X, Y, ZeroMatrix).
+ */	
+createZeroMatrix(0, _, []).
+createZeroMatrix(X, Y, [H|T]) :-
+	X > 0,
+	X1 is X-1,
+	createZeroList(Y, H),
+	createZeroMatrix(X1, Y, T).
+	
+/* createZeroList - Given X, creates a 0-List
+ * of size X.
+ *
+ * Parameters :
+ * 		(X, ZeroList).
+ */		
+createZeroList(0, []).
+createZeroList(X, [0|T]) :-
+	X > 0,
+	X1 is X-1,
+	createZeroList(X1,T).	
 
 /* checkBoothPos - Given a Room, booth number and list of Positions
  * we check how many positions in the list have booth in it. We
