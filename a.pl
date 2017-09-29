@@ -1,56 +1,5 @@
-/*room(3, 3).
-booths(3).
-dimension(1, 2, 1).
-dimension(2, 2, 1).
-dimension(3, 1, 1).
-position(1, 0, 1).
-position(2, 1, 2).
-position(3, 0, 0).
-target(3, 0, 2).
-horizon(10).
-*/
+/* :- moves(K) */
 
-/*
-room(3,3).
-booths(2).
-dimension(1,1,1).
-dimension(2,1,2).
-position(1,0,0).
-position(2,1,0).
-target(1,0,2).
-horizon(10).
-*/
-
-/*
-room(3,3).
-booths(2).
-dimension(1,1,1).
-dimension(2,1,2).
-position(1,0,0).
-position(2,1,0).
-target(1,2,0).
-horizon(6).
-*/
-
-/*
-room(3, 3).
-booths(3).
-dimension(1, 2, 1).
-dimension(2, 2, 1).
-dimension(3, 1, 1).
-position(1, 0, 1).
-position(2, 1, 2).
-position(3, 0, 0).
-target(3, 0, 2).
-horizon(10).
-*/
-
-room(3, 3).
-booths(1).
-dimension(1, 1, 1).
-position(1, 0, 0).
-target(1, 2, 2).
-horizon(5).
 /*  
  *     0 1 2 3  H
  *   0 ----------> 
@@ -62,11 +11,29 @@ horizon(5).
 	
 moves(K) :-
 	constructMatrix(OriginalRoom),
-	move(OriginalRoom, OriginalRoom, _, K, 0), writeln(K), fail;true.
+	tryMovesWithDepth(OriginalRoom, 0, K).
+	%fmt_write("moves(%d)\n", args(K)).
+	
 
-move(OriginalRoom, Room, NewRoom, 1, Depth) :-
+tryMovesWithDepth(OriginalRoom, D, K) :-
+	%writeln(D),
 	horizon(Limit),
-	Depth =< Limit,
+	D < Limit,
+	D1 is D+1,
+	(move(OriginalRoom, OriginalRoom, _, K1, 0, D) 
+	-> K = K1
+	;tryMovesWithDepth(OriginalRoom, D1, K)).
+
+/* move - Try move from current Room state to New Room
+ * in K moves, current depth is Depth and the Depth limit
+ * is Limit.
+ *    
+ *
+ * Parameters :
+ * 		(OriginalRoom, CurrentRoom, NewRoom, KMoves, Depth,Limit).
+ */	
+move(OriginalRoom, Room, NewRoom, 1, Depth, Limit) :-
+	Depth < Limit,
 	move1(Room, _, NewRoom),
 	target(Booth, StartX, StartY),
 	dimension(Booth, Dx, Dy),
@@ -82,14 +49,11 @@ move(OriginalRoom, Room, NewRoom, 1, Depth) :-
 	clear(OriginalRoom, InitialPositions, Room1),
 	equals(NewRoom1, Room1).
 	
-%TODO Add the condition that the other items should be in the same place.
-
-move(OriginalRoom, Room, NewRoom, K, Depth) :-
-	horizon(Limit),
-	Depth =< Limit,
+move(OriginalRoom, Room, NewRoom, K, Depth, Limit) :-
+	Depth < Limit,
 	move1(Room, _, NewRoom1),
 	Depth1 is Depth + 1,
-	move(OriginalRoom, NewRoom1, NewRoom, K1, Depth1),
+	move(OriginalRoom, NewRoom1, NewRoom, K1, Depth1, Limit),
 	K is K1+1.
 
 
