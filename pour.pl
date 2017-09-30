@@ -1,3 +1,5 @@
+/*:- split() */
+
 split() :-
 	constructList(Tray),
 	vessels(V),
