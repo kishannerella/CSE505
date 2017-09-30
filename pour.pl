@@ -1,41 +1,3 @@
-/*vessels(4).
-source(1).
-people(3).
-capacity(1, 12).
-capacity(2, 5).
-capacity(3, 3).
-capacity(4, 1).
-horizon(10).
-*/
-/*
-vessels(4).
-source(1).
-people(3).
-capacity(1, 12).
-capacity(2, 3).
-capacity(3, 3).
-capacity(4, 2).
-horizon(10).
-*/
-vessels(5).
-source(1).
-people(3).
-capacity(1, 12).
-capacity(2, 3).
-capacity(3, 3).
-capacity(4, 3).
-capacity(5, 2).
-horizon(10).
-/*
-vessels(4).
-source(1).
-people(4).
-capacity(1, 12).
-capacity(2, 3).
-capacity(3, 3).
-capacity(4, 3).
-horizon(10).
-*/
 split() :-
 	constructList(Tray),
 	vessels(V),
@@ -44,11 +6,11 @@ split() :-
 	tryMovesWithDepth(Tray, 0).
 
 tryMovesWithDepth(Tray, D) :-
-	writeln(D),
+	%writeln(D),
 	horizon(Limit),
 	D < Limit,
 	D1 is D+1,
-	(divide(Tray, _, 0, D)
+	(divide(Tray, 0, D)
 	;tryMovesWithDepth(Tray, D1)).
 	
 constructList(L):-
@@ -61,27 +23,14 @@ constructList(L):-
 	replace(L2, S, C, L).
 	%writeln(L).
 
-divide(Tray, NewTray, Depth, Limit) :-
+divide(Tray, Depth, Limit) :-
 	Depth < Limit,
 	capacity(X,_),
 	capacity(Y,_),
 	action(Tray, X, Y, NewTray),
-	source(S),
-	people(P),
-	capacity(S, TotalBeer),
-	BeerPerPerson is TotalBeer//P,
-	%writeln(BeerPerPerson),
-	checkTray(NewTray, BeerPerPerson).
-
-
-divide(Tray, NewTray, Depth, Limit) :-
-	Depth < Limit,
-	capacity(X,_),
-	capacity(Y,_),
-	action(Tray, X, Y, Tray1),
-	%writeln(Tray1),
-	Depth1 is Depth + 1,
-	divide(Tray1, NewTray, Depth1, Limit).
+	(checkTray(NewTray);
+	(Depth1 is Depth + 1,
+	 divide(NewTray, Depth1, Limit))).
 
 /* checkTray - Checks whether the given tray configuration
  * is valid solution.
@@ -89,9 +38,25 @@ divide(Tray, NewTray, Depth, Limit) :-
  * Parameters :
  * 		checkTray(Tray, BeerPerPerson).
  */	
-checkTray(L, BeerPerPerson):-
-	assign(L, L1),
-	valid(L1, BeerPerPerson).
+checkTray(L):-
+	source(S),
+	people(P),
+	capacity(S, TotalBeer),
+	BeerPerPerson is TotalBeer//P,
+	%optim
+	removeEmptyVessels(L, L1),
+	assign(L1, PersonTray),
+	valid(PersonTray, BeerPerPerson).
+	
+removeEmptyVessels([],[]).
+
+removeEmptyVessels([[_, 0] |T1], T) :-
+	removeEmptyVessels(T1,T).
+	
+removeEmptyVessels([[X,Y] |T1], [[X,Y] | T]) :-
+	Y > 0,
+	removeEmptyVessels(T1,T).
+	
 	
 valid(Tray, BeerPerPerson):-
 	valid1(Tray, 1, BeerPerPerson).
