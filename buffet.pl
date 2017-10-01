@@ -1,19 +1,11 @@
 /* :- tables(K) */
+
 tables(K) :-
 	constructMenu(Menu),
 	%findall(X, distribute(Menu, 0, X, 0), L),
 	setof(X, distribute(Menu, 0, X, 0), [K|_]).
 	%minimum(L, K).
 	
-	
-/*
-tryWithTables(Menu, D, K) :-
-	K1 is K + 1,
-	(distribute(Menu, 0, K1, 0)
-	 -> K = K1
-	 ;tryWithTables(Menu, K+1)
-	)
-	*/
 distribute(Menu, 0, 0, _) :-
 	empty(Menu), !.
 
@@ -82,7 +74,6 @@ available([[Id, Value]|_], Id, Value) :-
 available([[X, _]|T ], Id, Value) :-
 	X \= Id,
 	available(T, Id, Value).
-	
 	
 	
 empty([]).

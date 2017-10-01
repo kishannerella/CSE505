@@ -16,3 +16,9 @@ consult('E:\\SBU\\CS\\Acads\\Sem 1\\Logic\\Assignments\\ass1\\hw1_in_outs\\booth
 moves(K).
 ;
 halt.
+
+consult('E:\\SBU\\CS\\Acads\\Sem 1\\Logic\\Assignments\\ass1\\hw1_in_outs\\tour2_6.lp').
+[tourism2].
+satisfaction(K).
+;
+halt.
